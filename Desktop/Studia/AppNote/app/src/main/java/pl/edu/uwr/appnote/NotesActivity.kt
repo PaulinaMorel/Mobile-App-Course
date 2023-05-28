@@ -55,6 +55,9 @@ class NotesActivity : AppCompatActivity() {
     private val mediumPriorityColor: Int = Color.YELLOW
     private val lowPriorityColor: Int = Color.GREEN
 
+    private var allUserNotesOptions: FirestoreRecyclerOptions<Note>? = null
+
+
     private lateinit var rV: RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,15 +77,8 @@ class NotesActivity : AppCompatActivity() {
         firebaseFirestore = FirebaseFirestore.getInstance()
         supportActionBar!!.title = "All Notes"
 
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                // Wywołanie funkcji handleSortOptionSelected z wybraną pozycją
-                handleSortOptionSelected(position)
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Obsługa braku wybranego elementu (jeśli potrzebna)
-            }
-        }
+
+
         fb.setOnClickListener(View.OnClickListener {
             startActivity(
                 Intent(
@@ -105,7 +101,7 @@ class NotesActivity : AppCompatActivity() {
 
         val query = firebaseFirestore!!.collection("notes").document(
             firebaseUser!!.uid
-        ).collection("myNotes").orderBy("title", Query.Direction.ASCENDING)
+        ).collection("myNotes")
         val allusernotes: FirestoreRecyclerOptions<Note> =
             FirestoreRecyclerOptions.Builder<Note>().setQuery(
                 query,
@@ -118,6 +114,7 @@ class NotesActivity : AppCompatActivity() {
             ), PackageManager.PERMISSION_GRANTED
         )
 
+        allUserNotesOptions = allusernotes
         rV = findViewById(R.id.recyclerview)
 
         rV.apply {
@@ -126,6 +123,18 @@ class NotesActivity : AppCompatActivity() {
         }
         adapter = pl.edu.uwr.appnote.Adapter(allusernotes)
         rV.adapter = adapter
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Wywołanie funkcji handleSortOptionSelected z wybraną pozycją
+                handleSortOptionSelected(position)
+
+
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Obsługa braku wybranego elementu (jeśli potrzebna)
+
+            }
+        }
 
 
 
@@ -179,36 +188,27 @@ class NotesActivity : AppCompatActivity() {
         when (position) {
             0 -> {
                 // Sortuj po niskim priorytecie
-                println("CHUUUUUUUUUUUUUUUUUJ")
                 query.whereEqualTo("priority", 1)
                     .orderBy("title", Query.Direction.ASCENDING)
             }
             1 -> {
-                println("GÓWWWWWWWWWWWWWWWWWNO")
                 // Sortuj po średnim priorytecie
                 query.whereEqualTo("priority", 2)
                     .orderBy("title", Query.Direction.ASCENDING)
             }
             2 -> {
-                println("PIZDAAAAAAAAAAAAAAAAAAAAA")
                 // Sortuj po wysokim priorytecie
                 query.whereEqualTo("priority", 3)
                     .orderBy("title", Query.Direction.ASCENDING)
             }
             else -> {
-                println("SUKKKKKKKKKKKKKKKKKKKKKAAAAAAAAAA")
                 // Sortuj domyślnie
                 query.orderBy("title", Query.Direction.ASCENDING)
             }
         }
 
-        val allusernotes: FirestoreRecyclerOptions<Note> =
-            FirestoreRecyclerOptions.Builder<Note>().setQuery(
-                query,
-                Note::class.java
-            ).build()
-
-        // Aktualizuj adapter z nowymi opcjami sortowania
-        adapter.updateOptions(allusernotes)
+        allUserNotesOptions?.let { options ->
+            adapter.updateOptions(options)
+        }
     }
 }

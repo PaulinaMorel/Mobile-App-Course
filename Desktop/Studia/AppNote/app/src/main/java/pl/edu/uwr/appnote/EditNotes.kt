@@ -22,6 +22,7 @@ class EditNotes : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     var firebaseFirestore: FirebaseFirestore? = null
     var firebaseUser: FirebaseUser? = null
+    private var selectedCheckbox: CheckBox? = null
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -31,32 +32,37 @@ class EditNotes : AppCompatActivity() {
         var msaveeditnote: FloatingActionButton = findViewById(pl.edu.uwr.appnote.R.id.saveeditnote)
         var trash: ImageView = findViewById(pl.edu.uwr.appnote.R.id.trash)
 
+        val data = intent
         val check1: CheckBox = findViewById(pl.edu.uwr.appnote.R.id.buttonp12)
         val check2: CheckBox = findViewById(pl.edu.uwr.appnote.R.id.buttonp22)
         val check3: CheckBox = findViewById(pl.edu.uwr.appnote.R.id.buttonp32)
         val checkboxes = listOf(check1, check2, check3)
-        var selectedPriority = 0
+        var selectedPriority = data.getIntExtra("priority",0)
 
-        if (check1.isChecked) {
-            selectedPriority = 1
-        } else if (check2.isChecked) {
-            selectedPriority = 2
-        } else if (check3.isChecked) {
-            selectedPriority = 3
+        if (selectedPriority == 1) {
+            check1.isChecked
+        } else if (selectedPriority == 2) {
+            check2.isChecked
+        } else if (selectedPriority == 3) {
+            check3.isChecked
         }
         val checkedCount = checkboxes.count { it.isChecked }
-        val data = intent
+
         firebaseFirestore = FirebaseFirestore.getInstance()
         firebaseUser = FirebaseAuth.getInstance().currentUser
         msaveeditnote.setOnClickListener(View.OnClickListener {
+            if (check1.isChecked) {
+                selectedPriority = 1
+            } else if (check2.isChecked) {
+                selectedPriority = 2
+            } else if (check3.isChecked) {
+                selectedPriority = 3
+            }
             val newtitle = medittitleofnote.getText().toString()
             val newcontent = meditcontentofnote.getText().toString()
             if (newtitle.isEmpty() || newcontent.isEmpty()) {
                 Toast.makeText(applicationContext, "Something is empty", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
-            }else if(checkedCount != 1) {
-                Toast.makeText(this, "Mark just one priority", Toast.LENGTH_SHORT)
-                    .show()
             }else {
                 val documentReference = firebaseFirestore!!.collection("notes").document(
                     firebaseUser!!.uid

@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">AppNote</string>
+
+
+<string-array name="sort_options">
+<item>Sort by Low Priority</item>
+<item>Sort by Medium Priority</item>
+<item>Sort by High Priority</item>
+<item>Sort by Default</item>
+</string-array>
 </resources>

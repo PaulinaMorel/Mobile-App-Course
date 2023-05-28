@@ -49,7 +49,8 @@ class NotesActivity : AppCompatActivity() {
     var firebaseUser: FirebaseUser? = null
     var firebaseFirestore: FirebaseFirestore? = null
 
-
+    private lateinit var spinner: Spinner
+    private lateinit var sortOptions: Array<String>
     private val highPriorityColor: Int = Color.RED
     private val mediumPriorityColor: Int = Color.YELLOW
     private val lowPriorityColor: Int = Color.GREEN
@@ -61,6 +62,13 @@ class NotesActivity : AppCompatActivity() {
         val fb: FloatingActionButton = findViewById(R.id.createnotefab)
         var log: ImageView = findViewById(R.id.logout)
         var switch: Switch = findViewById(R.id.switch1)
+
+        // Inicjalizacja spinnera
+        spinner = findViewById(R.id.spinner_sort)
+        sortOptions = resources.getStringArray(R.array.sort_options)
+        val adapterr = ArrayAdapter(this, android.R.layout.simple_spinner_item, sortOptions)
+        adapterr.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapterr
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseUser = FirebaseAuth.getInstance().currentUser
         firebaseFirestore = FirebaseFirestore.getInstance()
@@ -154,5 +162,40 @@ class NotesActivity : AppCompatActivity() {
         }
         noteLayout.setBackgroundColor(backgroundColor)
     }
+    private fun handleSortOptionSelected(position: Int) {
+        val query = firebaseFirestore!!.collection("notes").document(
+            firebaseUser!!.uid
+        ).collection("myNotes")
 
+        when (position) {
+            0 -> {
+                // Sortuj po niskim priorytecie
+                query.whereEqualTo("priority", 1)
+                    .orderBy("title", Query.Direction.ASCENDING)
+            }
+            1 -> {
+                // Sortuj po średnim priorytecie
+                query.whereEqualTo("priority", 2)
+                    .orderBy("title", Query.Direction.ASCENDING)
+            }
+            2 -> {
+                // Sortuj po wysokim priorytecie
+                query.whereEqualTo("priority", 3)
+                    .orderBy("title", Query.Direction.ASCENDING)
+            }
+            else -> {
+                // Sortuj domyślnie
+                query.orderBy("title", Query.Direction.ASCENDING)
+            }
+        }
+
+        val allusernotes: FirestoreRecyclerOptions<Note> =
+            FirestoreRecyclerOptions.Builder<Note>().setQuery(
+                query,
+                Note::class.java
+            ).build()
+
+        // Aktualizuj adapter z nowymi opcjami sortowania
+        adapter.updateOptions(allusernotes)
+    }
 }

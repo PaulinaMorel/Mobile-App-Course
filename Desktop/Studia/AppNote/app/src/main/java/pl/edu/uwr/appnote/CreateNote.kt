@@ -23,10 +23,7 @@ class CreateNote : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_note)
 
-        val spinner = findViewById<Spinner>(R.id.spinner)
-        val priority = arrayOf("Low", "Medium", "High")
-        val arrayAdap = ArrayAdapter(this@CreateNote, android.R.layout.simple_spinner_dropdown_item,priority)
-        spinner.adapter = arrayAdap
+
 
         val check1: CheckBox = findViewById(R.id.buttonp1)
         val check2: CheckBox = findViewById(R.id.buttonp2)

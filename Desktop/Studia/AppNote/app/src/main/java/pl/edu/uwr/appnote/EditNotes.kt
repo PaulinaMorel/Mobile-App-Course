@@ -34,6 +34,7 @@ class EditNotes : AppCompatActivity() {
         val check1: CheckBox = findViewById(pl.edu.uwr.appnote.R.id.buttonp12)
         val check2: CheckBox = findViewById(pl.edu.uwr.appnote.R.id.buttonp22)
         val check3: CheckBox = findViewById(pl.edu.uwr.appnote.R.id.buttonp32)
+        val checkboxes = listOf(check1, check2, check3)
         var selectedPriority = 0
 
         if (check1.isChecked) {
@@ -43,7 +44,7 @@ class EditNotes : AppCompatActivity() {
         } else if (check3.isChecked) {
             selectedPriority = 3
         }
-
+        val checkedCount = checkboxes.count { it.isChecked }
         val data = intent
         firebaseFirestore = FirebaseFirestore.getInstance()
         firebaseUser = FirebaseAuth.getInstance().currentUser
@@ -53,7 +54,10 @@ class EditNotes : AppCompatActivity() {
             if (newtitle.isEmpty() || newcontent.isEmpty()) {
                 Toast.makeText(applicationContext, "Something is empty", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
-            } else {
+            }else if(checkedCount != 1) {
+                Toast.makeText(this, "Mark just one priority", Toast.LENGTH_SHORT)
+                    .show()
+            }else {
                 val documentReference = firebaseFirestore!!.collection("notes").document(
                     firebaseUser!!.uid
                 ).collection("myNotes").document(data.getStringExtra("noteId").toString())
@@ -85,7 +89,7 @@ class EditNotes : AppCompatActivity() {
             val documentReference =
                 firebaseFirestore!!.collection("notes").document(
                     firebaseUser!!.uid
-                ).collection("myNotes").document()
+                ).collection("myNotes").document(data.getStringExtra("noteId").toString())
             documentReference.delete().addOnSuccessListener {
                 Toast.makeText(
                     v.context,

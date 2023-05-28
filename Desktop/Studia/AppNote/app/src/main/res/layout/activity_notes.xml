@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         tools:layout_editor_absoluteX="79dp"
         tools:layout_editor_absoluteY="31dp">
 
@@ -95,5 +95,14 @@
         app:layout_constraintStart_toEndOf="@+id/switch1"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_dark_mode_24" />
+
+    <Spinner
+        android:id="@+id/spinner_sort"
+        android:layout_width="400dp"
+        android:layout_marginStart="10dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="80dp"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

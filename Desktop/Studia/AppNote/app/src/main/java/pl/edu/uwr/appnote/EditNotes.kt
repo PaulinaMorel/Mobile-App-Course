@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -29,6 +30,20 @@ class EditNotes : AppCompatActivity() {
         var meditcontentofnote: EditText = findViewById(pl.edu.uwr.appnote.R.id.editcontentofnote)
         var msaveeditnote: FloatingActionButton = findViewById(pl.edu.uwr.appnote.R.id.saveeditnote)
         var trash: ImageView = findViewById(pl.edu.uwr.appnote.R.id.trash)
+
+        val check1: CheckBox = findViewById(pl.edu.uwr.appnote.R.id.buttonp12)
+        val check2: CheckBox = findViewById(pl.edu.uwr.appnote.R.id.buttonp22)
+        val check3: CheckBox = findViewById(pl.edu.uwr.appnote.R.id.buttonp32)
+        var selectedPriority = 0
+
+        if (check1.isChecked) {
+            selectedPriority = 1
+        } else if (check2.isChecked) {
+            selectedPriority = 2
+        } else if (check3.isChecked) {
+            selectedPriority = 3
+        }
+
         val data = intent
         firebaseFirestore = FirebaseFirestore.getInstance()
         firebaseUser = FirebaseAuth.getInstance().currentUser
@@ -45,6 +60,7 @@ class EditNotes : AppCompatActivity() {
                 val nott: Note = Note(
                     title = newtitle,
                     content = newcontent,
+                    priority = selectedPriority,
                     did = documentReference.id
                 )
                 documentReference.set(nott).addOnSuccessListener {
@@ -69,13 +85,14 @@ class EditNotes : AppCompatActivity() {
             val documentReference =
                 firebaseFirestore!!.collection("notes").document(
                     firebaseUser!!.uid
-                ).collection("myNotes").document("did")
+                ).collection("myNotes").document()
             documentReference.delete().addOnSuccessListener {
                 Toast.makeText(
                     v.context,
                     "This note is deleted",
                     Toast.LENGTH_SHORT
                 ).show()
+                startActivity(Intent(this@EditNotes, NotesActivity::class.java))
             }.addOnFailureListener {
                 Toast.makeText(
                     v.context,

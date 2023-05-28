@@ -3,6 +3,7 @@ package pl.edu.uwr.appnote
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.Color.green
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
@@ -49,6 +50,9 @@ class NotesActivity : AppCompatActivity() {
     var firebaseFirestore: FirebaseFirestore? = null
 
 
+    private val highPriorityColor: Int = Color.RED
+    private val mediumPriorityColor: Int = Color.YELLOW
+    private val lowPriorityColor: Int = Color.GREEN
 
     private lateinit var rV: RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +65,8 @@ class NotesActivity : AppCompatActivity() {
         firebaseUser = FirebaseAuth.getInstance().currentUser
         firebaseFirestore = FirebaseFirestore.getInstance()
         supportActionBar!!.title = "All Notes"
+
+
         fb.setOnClickListener(View.OnClickListener {
             startActivity(
                 Intent(
@@ -139,6 +145,14 @@ class NotesActivity : AppCompatActivity() {
         if (adapter != null) {
             adapter!!.stopListening()
         }
+    }
+    private fun setNoteBackground(priority: Int, noteLayout: LinearLayout) {
+        val backgroundColor = when (priority) {
+            1 -> highPriorityColor
+            2 -> mediumPriorityColor
+            else -> lowPriorityColor
+        }
+        noteLayout.setBackgroundColor(backgroundColor)
     }
 
 }

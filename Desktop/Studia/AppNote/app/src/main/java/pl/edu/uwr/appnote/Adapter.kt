@@ -30,6 +30,7 @@ class Adapter(options : FirestoreRecyclerOptions<Note>) : FirestoreRecyclerAdapt
                         val intent = Intent(v.context, EditNotes::class.java)
                         intent.putExtra("title", model.title)
                         intent.putExtra("content", model.content)
+                        intent.putExtra("priority", model.priority)
                         intent.putExtra("noteId", model.did)
                         v.context.startActivity(intent)
 
